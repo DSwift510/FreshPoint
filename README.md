@@ -4,6 +4,7 @@
 REQUIRED DOWNLOADS
 
 Pyhton 2.7.X - https://www.python.org/downloads/ 
+
 MySQL WorkBench - https://dev.mysql.com/downloads/workbench/
 
 REQUIRED FOR FIRST RUN
