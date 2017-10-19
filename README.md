@@ -11,4 +11,4 @@ REQUIRED FOR FIRST RUN
 
 a) ClassPath to Excel file fitting the Complete_Freshpoint Schema in instantiate database
 
-b) Microsoft access DB to import into MySql. This requires an access MS Access-MySql odbc: https://dev.mysql.com/downloads/connector/odbc/5.3.html 
+b) Microsoft access DB to import into MySql. This requires an access MS Access-MySql odbc(64-bit recommended): https://dev.mysql.com/downloads/connector/odbc/5.3.html 
