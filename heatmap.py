@@ -8,167 +8,93 @@ Created on Mon Sep 11 00:58:10 2017
 import mysql.connector
 import matplotlib.pyplot as plt
 import seaborn as sns
-#%matplotlib inline
-import pprint as pp
 import numpy as np
 import pandas as pd
+
+
+fpCases = 0
+fvtCases = 0
+locality = 0
+available=[]
+fpMonth=''
+fpProduct=''
+fvtMonth=''
+fvtProduct=''
+ind=0
 dbconnect = mysql.connector.connect(host='localhost',port='3309',database='ufoods',user='root',password='aggi3pride')
-produce_dict = {}   #lookup dictionary for product id
-reverse_produce_dict={} #lookup dictionary for description
-produce_row_dict ={} #lookup dictionary of product id and matrix rows
-Saleshist = [] 
 cursor = dbconnect.cursor(buffered=True)
-default = 9999
 
-def construct_plural_string(word):
-    if word[-1] == 'O':
-        return word.upper()+'ES'
-    elif word[-1] == 'Y':
-        return word.upper()[0:-1]+'IES'
-    else:
-        return word.upper()+'S'
+#################################################################################
+statement = """select cbo2.MY, cbo2.Cases_Sold, cbo2.Food from ufoods.cbo2 GROUP BY cbo2.Food, cbo2.SProductID, cbo2.MY;"""
+
+def setHeatmap(cursor):
+    cursor.execute(statement)
+    global outer
+    outer = 0
+    rows = cursor.fetchall()    
+    
+    FreshPoint = pd.DataFrame( [[ij for ij in i] for i in rows] )     
+    FreshPoint.rename(columns={0: 'Month', 1: 'Cases Sold', 2: 'Product', 3: 'January', 4:'February', 5: 'March', 6:'April', 7:'May', 8:'June', 9:'July', 10:'August', 11:'September', 12:'October', 13:'November', 14:'December'}, inplace=True);
+    print FreshPoint
+    
+    cursor.execute("""select fruit_vegetable_table.Food, fruit_vegetable_table.January, fruit_vegetable_table.February, fruit_vegetable_table.March, fruit_vegetable_table.April, fruit_vegetable_table.May, fruit_vegetable_table.June, fruit_vegetable_table.July, fruit_vegetable_table.August, fruit_vegetable_table.September, fruit_vegetable_table.October, fruit_vegetable_table.November, fruit_vegetable_table.December from ufoods.fruit_vegetable_table order by fruit_vegetable_table.Food""")
+    rows2 = cursor.fetchall()
+    FVT = pd.DataFrame( [[ij for ij in i] for i in rows2] )
+    FVT.rename(columns={ 0:'', 1:'January', 2:'February', 3: 'March', 4:'April', 5:'May', 6:'June', 7:'July', 8:'August', 9:'September', 10:'October', 11:'November', 12:'December'}, inplace=True);
+    transFVT = FVT.set_index('').T
+    print transFVT
+    
+    for fvtindex, fvtrow in transFVT.iterrows():
         
-def check_string(word,produce_dict):
-    value = produce_dict.get(word.upper(),default)
-    if value == default:    
-        pluralword = construct_plural_string(word)
-        value = produce_dict.get(pluralword,default)
-    return value
-
-
-
-#TODO: needs own method 
-def createDict(cursor):
-    cursor.execute("SELECT Food, ProductID FROM ufoods.producemasterlist;")
-    rownum=0
-    for row in cursor.fetchall():
-        #print(row)
+        for product in fvtrow.index:
+             #print 'fvtindex: ',fvtindex,'|product: ', product,'|fvtrow[product]: ', fvtrow[product]
+             fvtProduct = product
+             fvtMonth = fvtindex
+             #print fvtProduct, ' / ', fvtMonth
+             
+             outer = matchFVT2FP(fvtProduct,fvtMonth,fvtrow,FreshPoint,transFVT)
+             if outer == 0:
+                 available.append(0)
+    #print available, '\n'    
+    #print len(available)
+    
+    hm = pd.DataFrame(np.array(available).reshape(12,59), columns =list(transFVT.columns),index=list(transFVT.index))
+    print hm
+    plt.figure(figsize=(20,10))
+    sns.heatmap(hm,linecolor='white',linewidth=.5)
+    plt.show()     
+    plt.savefig("""C:\Users\Dasani\Desktop\fpheatmap.png""")
+    
+    
+def matchFVT2FP(fvtProduct,fvtMonth,fvtrow,FreshPoint,transFVT):
+    inner=0
+    for fpindex, fprow in FreshPoint.iterrows():
+        fpMonth = fprow['Month']
+        fpCases = fprow['Cases Sold']
+        fpProduct = fprow['Product']
+        #print 'fvtProduct: ', fvtProduct, ' fpProduct: ', fpProduct, '| fpMonth: ', fpMonth, ' fvtMonth: ', fvtMonth, '| fpCases: ', fpCases, '\n'
         
-        produce_dict[str(row[0].strip())] = int(row[1])
-        reverse_produce_dict[int(row[1])] = str(row[0].strip())
-        produce_row_dict[int(row[1])] = rownum
-        rownum += 1
-    print("\nProd Dict")    
-    #pp.pprint(produce_dict.items())  
-    print("\nrProd Dict") 
-    #pp.pprint(reverse_produce_dict.items())  
-    print("\nProd Row Dict") 
-    #pp.pprint(produce_row_dict.items())
-    #getSalesHist(cursor)
-
-#TODO: needs own method
-def getSalesHist(cursor):
-    print('\nFETCHING DATA FROM COMPLETE FRESHPOINT TABLE\n')
-    cursor.execute("SELECT Complete_Freshpoint.ID, Complete_Freshpoint.Supplier, Complete_Freshpoint.Description, Complete_Freshpoint.Month_year, Complete_Freshpoint.Cases_Sold, Complete_Freshpoint.Sales_Dollars, Complete_Freshpoint.LocalFlag FROM Complete_Freshpoint")
-    for row in cursor.fetchall():
-        Saleshist.append(list(row))
-        #pp.pprint(Saleshist)
-
-#TODO: needs own method
-def setSalesHist(): 
-    print('CHECKING DESCRIPTIONS IN PO HISTORY')
-    for rowidx, row in enumerate(Saleshist):
-        newstr = row[2].strip().split(' ')   #save item description as a list of strings
-        for words in newstr:
-            value = check_string(words.upper(),produce_dict)
-            if value !=default:      #match found
-                break
-            Saleshist[rowidx].append(value)
-            #pp.pprint(Saleshist)
-
-#TODO: needs own method 
-def getFVT(cursor):
-    A_Matrix = np.zeros((len(produce_dict),12))
-    Cases_Matrix = np.zeros((len(produce_dict),12))
-    cursor.execute("SELECT * FROM Fruit_Vegetable_Table")
-    ctr = 0
-    for row in cursor.fetchall():
-        results = [int(i) for i in list(row[2:-1])]
-        print("""results = """, results)
-        A_Matrix[ctr]=results
-        ctr+=1
-    
-    print(A_Matrix)
-    getNonLocal(A_Matrix,Cases_Matrix,cursor)
-    #getLocal(A_Matrix,Cases_Matrix,cursor)
-#TODO: needs own method 
-def getNonLocal(A_Matrix, Cases_Matrix,cursor):
-    #cursor.execute("SELECT * FROM Complete_Freshpoint WHERE LocalFlag = %s",['NotLocal'])
-    cursor.execute("SELECT * FROM Complete_Freshpoint WHERE Not_local = 1")
-    for row in cursor.fetchall():
-        if row[3] is not None:
-            rowid = produce_row_dict.get(row[-1],default) 
-            if rowid !=default:
-                colid = row[3].month 
-                Cases_Matrix[rowid,colid-1] += row[5]
-    #setDimensions(Cases_Matrix)
-    getLocal(A_Matrix, Cases_Matrix, cursor)
-    
-#TODO: Create Temporary Table adding Local value to Complete_Freshpoints creating 3d array (dataframe) 
-def getLocal(A_Matrix, Cases_Matrix, cursor):
-    cursor.execute("SELECT * FROM Complete_Freshpoint WHERE Not_local = 0")
-    for row in cursor.fetchall():
-        if row[3] is not None:
-            rowid = produce_row_dict.get(row[-1],default) 
-            if rowid !=default:
-                colid = row[3].month 
-                Cases_Matrix[rowid,colid-1] += row[5]
-    setDimensions(Cases_Matrix)
-
-def setDimensions(Cases_Matrix):                     
-    print('Saving Cases Matrix')
-    print(Cases_Matrix[0,8])
-    np.savetxt('CasesSold',Cases_Matrix,delimiter = ",")
-    print(produce_row_dict)
-    print('flattening cases matrix')
-    CasesFlat = list(Cases_Matrix.flatten('C'))  #convert to 1d array
-    Months = ['Jan', 'Feb','Mar','Apr','May','June','Jul', 'Aug','Sep','Oct','Nov','Dec']*len(produce_dict)
-    setProductList(Months,CasesFlat)
-#TODO: needs own method 
-#build product list
-def setProductList(Months,CasesFlat):
-    Prods=[]
-
-    for key in produce_row_dict:
-        print("Key is ", key)
-        desc = reverse_produce_dict.get(key,'NONE')
-        desclist = [desc]*12
-        Prods.extend(desclist)    
-
-    #print(reverse_produce_dict)
-    print(Prods)
-    df2=pd.DataFrame({'Months':Months,'Prods':Prods,'Values':CasesFlat})
-    print("\ndf2\n")
-    print(df2)
-    #addDimension(df2, cursor)
-    
-    #saveDataToExel(df2)
-    #df2 = df2[1].fillna(0,inplace=True)
-    #showGraph(df2)
-    #TODO: needs own method
-
-def showGraph(df2):
-
-    ##### print heatmap
-    sns.heatmap(df2, annot=True)
-    #plt.show()
+        if fpMonth.lower() == fvtMonth.lower() and fpProduct.lower()==fvtProduct.lower():
+            inner+=1
+            if fpCases > 0.0:     
+                    
+                    if fvtrow[fvtProduct] == 0.0:
+                            available.append(1)
+                            
+                    elif fvtrow[fvtProduct] == 1.0:
+                            available.append(2)
+                            
+                    else:        
+                        break
+                          
+                        #available.append(0)
+            else:                     
+                        available.append(0)
+    #print available, '|' 
+    return inner    
 
 
-#TODO: needs own method
-def saveDataToExel(df2):
-## write data frame to excel file
-    writer = pd.ExcelWriter('output.xlsx')
-    df2.to_excel(writer,'Sheet1')
-    writer.save()
 
 
-#dbconnect.close()
-
-if __name__ == '__main__':
-    createDict(cursor)
-    #setSalesHist()
-    #getFVT(cursor)
-    #getLocal()
+setHeatmap(cursor)
 dbconnect.close()
-
-
