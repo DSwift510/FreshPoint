@@ -1,0 +1,13 @@
+The purpose of this manual is to provide step-by-step instruction on how to download and install 
+a) Python 3.X.X 
+b) MySql - specifically MySql Workbench.
+It is possible to run using a base level MySql install but for non-technical users it may be difficult to interface with the database.
+
+Install Python (Windows)
+---------------------------------------
+1.  In your browser navigate to https://www.python.org/downloads/windows/
+2.  
+
+
+Install MySql Workbench (Windows)
+---------------------------------------
