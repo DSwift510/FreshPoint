@@ -3,7 +3,7 @@
 
 REQUIRED DOWNLOADS
 
-Pyhton 2.7.X - https://www.python.org/downloads/ 
+Pyhton 2.7.X/3.6 - https://www.python.org/downloads/ 
 
 MySQL WorkBench - https://dev.mysql.com/downloads/workbench/
 
