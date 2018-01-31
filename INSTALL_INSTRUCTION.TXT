@@ -20,7 +20,9 @@ Install Python (Windows)
 
 5. In command prompt type: C:\python
    If this command returns the version number of your python, congradulations!
-
+---------------------------------------
+Install MySql
+---------------------------------------
 Install MySql Workbench (Windows)
 ---------------------------------------
 Requirements for Windows
