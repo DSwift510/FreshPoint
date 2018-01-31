@@ -21,7 +21,7 @@ Install Python (Windows)
 5. In command prompt type: C:\python
    If this command returns the version number of your python, congradulations!
 ---------------------------------------
-Install MySql
+Install MySql Server
 ---------------------------------------
 Install MySql Workbench (Windows)
 ---------------------------------------
@@ -32,7 +32,10 @@ Windows 7 and above
 
 1. From https://dev.mysql.com/downloads/workbench/ download the 'Windows (x86, 64-bit), MSI Installer' and follow the installation GUI provided. 
 2. Make sure host = localhost and port = 3309 for your database set up
-
+--------------------------------------
+(If Required)
+Install MS Access ODBC
+--------------------------------------
 Download Repository (Windows)
 ---------------------------------------
 1. On GitHub, navigate to the main page of the repository.
