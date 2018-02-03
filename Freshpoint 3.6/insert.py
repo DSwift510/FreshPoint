@@ -19,9 +19,9 @@ cursor = dbconnect.cursor(buffered=True)
 
 
 
-filename = raw_input("Enter Excel file class path to be added to Complete Freshpoint: ")
+filename = input("Enter Excel file class path to be added to Complete Freshpoint: ")
 book = xlrd.open_workbook(filename)
-sheetname = raw_input("Enter the name of the Excel Sheet to be used: ")
+sheetname = input("Enter the name of the Excel Sheet to be used: ")
 sheet = book.sheet_by_name(sheetname)
 
 
