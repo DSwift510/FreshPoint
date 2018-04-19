@@ -20,7 +20,7 @@ fpProduct=''
 fvtMonth=''
 fvtProduct=''
 ind=0
-dbconnect = mysql.connector.connect(host='localhost',port='3309',database='ufoods',user='root',password='aggi3pride')
+dbconnect = mysql.connector.connect(host='localhost',port='3306',database='ufoods',user='django',password='aggieprid3')
 cursor = dbconnect.cursor(buffered=True)
 
 #################################################################################
@@ -66,7 +66,7 @@ def setHeatmap(cursor):
     cbar = hmFinish.collections[0].colorbar
     cbar.set_ticks([0,1,2,3])
     cbar.set_ticklabels(['None Purchased When Not Local','None Purchased When Local','Purchased When Not Local','Purchased When Local'])
-    plt.savefig("""C:/Users/Dasani/Desktop/f_p_heatmap.png""")
+    plt.savefig("""/Users/Dasani/Desktop/f_p_heatmap.png""")
     #plt.show()     
     
     

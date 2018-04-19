@@ -11,7 +11,7 @@ import mysql.connector
 import re
 
 
-dbconnect = mysql.connector.connect(host='localhost',port='3309',database='ufoods',user='root',password='aggi3pride')
+dbconnect = mysql.connector.connect(host='localhost',port='3306',database='ufoods',user='django',password='aggieprid3')
 cursor = dbconnect.cursor(buffered=True)
 
 results=""
@@ -44,4 +44,5 @@ word_cloud = WordCloud(collocations = False).generate(textcloud)
 plt.figure(figsize=(16,8))
 plt.imshow(word_cloud)
 plt.axis("off")
-plt.show()
+plt.savefig('fpwordcloud.png')
+#plt.show()

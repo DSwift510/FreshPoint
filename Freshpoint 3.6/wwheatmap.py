@@ -21,7 +21,7 @@ fvtMonth=''
 fvtProduct=''
 ind=0
 
-dbconnect = mysql.connector.connect(host='localhost',port='3309',database='warrenwilson',user='root',password='aggi3pride')
+dbconnect = mysql.connector.connect(host='localhost',port='3306', database='warrenwilson', user='django', password='aggieprid3')
 cursor = dbconnect.cursor(buffered=True)
 
 ####################################################################################
@@ -65,20 +65,21 @@ def setHeatmap(cursor):
     
     hm = pd.DataFrame(np.array(available).reshape(12,59), columns =list(transFVT.columns),index=list(transFVT.index))
     #print hm
-    plt.figure(figsize=(17,8))
-    plt.xticks(rotation=90)
+    plt.figure(figsize=(20,7))
+ #   plt.xticks("""fontsize=10, rotation=90""")
     plt.ylabel('y',rotation='vertical')
-    hmFinish = sns.heatmap(hm,linecolor='black',cmap=ListedColormap(['None', 'yellow', 'green','red']),linewidth=.5)
-    loc, labels = plt.xticks()
+    hmFinish = sns.heatmap(hm,linecolor='black',cmap=ListedColormap(['None', 'yellow', 'green','red']),square=True,linewidth=.5)
+    loc, labels = plt.xticks(fontsize=8, rotation=75)
     #hmFinish.set_yticklabels(labels[::-1], rotation=0) 
     #hmFinish.xaxis.tick_top()
     cbar = hmFinish.collections[0].colorbar
-    cbar.set_ticks([0,1,2,3])
+    cbar.set_ticks([.4,1.15,1.85,2.62])
     cbar.set_ticklabels(['Seasonally Unavailable, No Purchase','Seasonally Availalable, No Purchased','Seasonally Unavailable, Azonic Purchase','Seasonally Avaliable, Azonic Purchase'])
+    cbar.cbar_kws={"shrink":.50}
     #hmFinish.set_title('Seasonal Opportunities')
-    plt.suptitle('Seasonal Opportunities', x=.45, fontsize=24)
-    plt.title("""Comparing what you've done with what you could do, with regards to purchasing locally.""")
-    #plt.savefig("""C:/Users/Dasani/Desktop/Fresh Point 2.7/W_W_heatmap.png""")
+    plt.suptitle('Seasonal Opportunities', x=.45, fontsize=14)
+    plt.title("""Comparing what you've done with what you could do, with regards to purchasing locally.""", fontsize=10)
+    plt.savefig("""/Users/Dasani/Desktop/W_W_heatmap.png""", dpi = 250)
     #return plt
     plt.show()     
     
