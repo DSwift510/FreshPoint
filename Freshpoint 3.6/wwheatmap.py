@@ -74,7 +74,7 @@ def setHeatmap(cursor):
     #hmFinish.xaxis.tick_top()
     cbar = hmFinish.collections[0].colorbar
     cbar.set_ticks([.4,1.15,1.85,2.62])
-    cbar.set_ticklabels(['Seasonally Unavailable, No Purchase','Seasonally Availalable, No Purchased','Seasonally Unavailable, Azonic Purchase','Seasonally Avaliable, Azonic Purchase'])
+    cbar.set_ticklabels(['Seasonally Unavailable, No Purchase','Seasonally Availalable, No Azonic Purchased','Seasonally Unavailable, Azonic Purchase','Seasonally Avaliable, Azonic Purchase'])
     cbar.cbar_kws={"shrink":.50}
     #hmFinish.set_title('Seasonal Opportunities')
     plt.suptitle('Seasonal Opportunities', x=.45, fontsize=14)

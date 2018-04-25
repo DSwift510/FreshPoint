@@ -35,15 +35,15 @@ fpProduct=''
 fvtMonth=''
 fvtProduct=''
 ind=0
-dbconnect = mysql.connector.connect(host='localhost',port='3306',database='ufoods',user='django',password='aggieprid3')
+dbconnect = mysql.connector.connect(host='localhost',port='3306',database='warrenwilson',user='django',password='aggieprid3')
 cursor = dbconnect.cursor(buffered=True)
 
 #################################################################################
-statement = """select fullgoodmap.MY, fullgoodmap.Cases_Sold, fullgoodmap.Food, fullgoodmap.Not_local from ufoods.fullgoodmap GROUP BY fullgoodmap.Food, fullgoodmap.SProductID, fullgoodmap.MY;"""
+statement = """select warrenwilson.wwgoodmapfull.MY, warrenwilson.wwgoodmapfull.Cases, warrenwilson.wwgoodmapfull.foodtype, warrenwilson.wwgoodmapfull.Local from warrenwilson.wwgoodmapfull GROUP BY warrenwilson.wwgoodmapfull.foodtype, warrenwilson.wwgoodmapfull.productid, warrenwilson.wwgoodmapfull.MY;"""
 
 
 def setGoodMap(cursor):
-    cursor.execute("""DROP TEMPORARY TABLE IF EXISTS fullgoodmap;""")
+    cursor.execute("""DROP TEMPORARY TABLE IF EXISTS warrenwilson.wwgoodmapfull;""")
     cursor.execute(statement)
 
     rows = cursor.fetchall()
@@ -85,9 +85,9 @@ def setGoodMap(cursor):
     loc, labels = plt.xticks(fontsize=8, rotation=75)    #hmFinish.xaxis.tick_top()
     cbar = hmFinish.collections[0].colorbar
     cbar.set_ticks([.4,1.15,1.85,2.62])
-    cbar.set_ticklabels(['','Seasonally Available, No Purchase','Seasonally Available, Local Purchase','Seasonally Unavailable, Azonic Purchase'])
+    cbar.set_ticklabels(['Seasonally Unavailable, No purchase','Seasonally Available, No Purchase','Seasonally Available, Local Purchase','Seasonally Unavailable, Azonic Purchase'])
     plt.suptitle('Seasonal Improvement Opportunities', fontsize=16, x=.45)
-    plt.savefig("""/Users/Dasani/Desktop/f_p_goodmap.png""", dpi = 200)
+    plt.savefig("""/Users/Dasani/Desktop/WW_goodmap.png""", dpi = 200)
     plt.tight_layout()
     plt.show()
 

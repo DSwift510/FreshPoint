@@ -85,7 +85,7 @@ def setGoodMap(cursor):
     loc, labels = plt.xticks(fontsize=8, rotation=75)    #hmFinish.xaxis.tick_top()
     cbar = hmFinish.collections[0].colorbar
     cbar.set_ticks([.4,1.15,1.85,2.62])
-    cbar.set_ticklabels(['','Seasonally Available, No Purchase','Seasonally Available, Local Purchase','Seasonally Unavailable, Azonic Purchase'])
+    cbar.set_ticklabels(['Seasonally Unavailable, No purchase','Seasonally Available, No Purchase','Seasonally Available, Local Purchase','Seasonally Unavailable, Azonic Purchase'])
     plt.suptitle('Seasonal Improvement Opportunities', fontsize=16, x=.45)
     plt.savefig("""/Users/Dasani/Desktop/f_p_goodmap.png""", dpi = 200)
     plt.tight_layout()
